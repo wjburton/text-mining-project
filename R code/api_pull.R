@@ -18,8 +18,6 @@ keys<- c('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
          'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
 
 #sort can either be done by score (r) or trending (t)
-#google drive app for windows, can sync folders
-#
 
 
 call_f2f_api_recipe <- function(search_term = "", sort = "", page = 1, api_key = ""){
