@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "#text analysis\nlibrary(tm)\nlibrary(lsa)\nlibrary(ggplot2)\nlibrary(tibble)\nlibrary(dplyr)\nlibrary(topicmodels)\n\n\n################################################################################\n#                                                                              #\n#       additional functions used in this script are listed in the order       #\n#              they appear below in the utils R file                           #\n#                                                                              #\n################################################################################\n\n#Read in data\ndf <- read_in_recipe_data()\n\n\n#Clean the ingredients column\nclean_recipes <- clean_ingredients(df$ingredients)\ndf <- df[names(clean_recipes),]\n\n#do this temporarily to see results\nset.seed(100)\nrand_samp <- sample(1:length(clean_recipes), 1000)\nclean_recipes <- clean_recipes[rand_samp]\nclean_recipes <- clean_recipes[clean_recipes != \"\"]\nsampled_df <- df[names(clean_recipes),] %>% select(-c(f2f_url, source_url, \n                                                      image_url, page,\n                                                      publisher_url))\n\n\n#Create a text corpus of all the recipe ingredients\nrecipe_corpus <- create_corpus(clean_recipes)\n\n\n#Create a document term frequency for the ingredients \nall_recipes <- paste(clean_recipes, collapse = '')\ntitle_word_freq <- table(unlist(strsplit(all_recipes, split = \" \")))\ntitle_word_freq <- title_word_freq[!(names(title_word_freq) %in% c(stopwords(),'amp'))]\ntitle_word_freq <- data.frame(title_word_freq)\nnames(title_word_freq) <- c('ingredient', 'freq')\ntitle_word_freq <- title_word_freq %>% arrange(desc(freq))\n\n#look at the 30 mot frequent and least frequent items\nggplot(title_word_freq[1:30,], aes(x=reorder(ingredient,freq), y=freq)) + \n  geom_point(size=5, colour=\"red\") + coord_flip() +\n  ggtitle(\"Recipe Popularity of Top 30 Ingredients\") +\n  xlab('Ingredient')+\n  ylab('Frequency')+\n  theme(axis.text.x=element_text(size=13,face=\"bold\", colour=\"black\"), \n        axis.text.y=element_text(size=13,colour=\"black\",\n                                 face=\"bold\"), axis.title.x=element_text(size=14, face=\"bold\"),\n        axis.title.y=element_text(size=14,face=\"bold\"),\n        plot.title=element_text(size=24,face=\"bold\"))\n\n\n\n#create similarity matrix\ntemp <- as.matrix(TermDocumentMatrix(recipe_corpus))\nsimilarity_cos <- cosine(temp)\nsimilarity_cos <- 1 - similarity_cos\nrecipe_cluster <- kmeans(similarity_cos, centers = 20)\n\n#create clusters from the ingredients\nsampled_df$cluster <- recipe_cluster$cluster\nsampled_df$ingredients <- clean_recipes\n\n#look at 5 tightest clusters\nmost_similar <- order(recipe_cluster$withinss)[1:5]\nhead(sampled_df[sampled_df$cluster == most_similar[1],c(3,5,6)],60)",
+    "created" : 1476472071628.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "698256749",
+    "id" : "BE6B4627",
+    "lastKnownWriteTime" : 1477011237,
+    "last_content_update" : 1477011237,
+    "path" : "~/MSA/fall/text_mining/text_mining_proj/R code/analysis.R",
+    "project_path" : "analysis.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

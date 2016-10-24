@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : " \n## on this page we try to predict the social rank of a recipe to learn what makes a recipe popular\n\ndf <- read_in_recipe_data()\ndf$ingredients <- clean_ingredients(df$ingredients)\n\n\n#Variable creation  :We are only creating the number of unique words\nn_unique_words <- trimws(gsub('\\\\d', \" \", df$ingredients))\nn_unique_words <-  strsplit(n_unique_words, split = ' ')\nn_unique_words <- sapply(n_unique_words, function(x) length(unique(x[x != ''])))\ndf$n_unique_words <- n_unique_words\ndf$nchar_title <- nchar(df$title)\n\n#we were going to add the cluster a recipe is in.. but they were not significant\n\n\nsamp <- sample(1:nrow(df), nrow(df)*0.6)\ntrain <- df[samp,]\nvalid <- df[-samp,]\ndf$publisher <- as.factor(df$publisher)\n\nlinear_model <- lm(social_rank ~ n_unique_words + publisher, data = train)\nsummary(linear_model)\n\n\n# The only significant variables were the publisher of the recipe and the number of unique terms\n#in the recipe",
+    "created" : 1476843652877.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "917952453",
+    "id" : "21CD4B95",
+    "lastKnownWriteTime" : 1477008461,
+    "last_content_update" : 1477008461242,
+    "path" : "~/MSA/fall/text_mining/text_mining_proj/R code/pred_social_rank.R",
+    "project_path" : "pred_social_rank.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 5,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "\n#recipe titles \nlibrary(tm)\nlibrary(ggplot2)\n\n#Read in data\nall_recipes <- read.csv('../data/all_recipes.csv', stringsAsFactors = F)\nall_recipes <- all_recipes[!duplicated(all_recipes$title),]\n\n#Clean the ingredients column\nclean_titles <- clean_text(all_recipes$title)\n\n\n#Create a text corpus of all the recipe titles\nall_titles <- paste(clean_titles, collapse = '')\ntitle_word_freq <- table(unlist(strsplit(all_titles, split = \" \")))\ntitle_word_freq <- title_word_freq[!(names(title_word_freq) %in% c(stopwords(),'amp'))]\ntitle_word_freq <- data.frame(title_word_freq)\nnames(title_word_freq) <- c('word', 'freq')\ntitle_word_freq <- title_word_freq %>% arrange(desc(freq))\n\n\n\nggplot(title_word_freq[1:30,], aes(x=reorder(word,freq), y=freq)) + \n  geom_point(size=5, colour=\"red\") + coord_flip() +\n  ggtitle(\"Top 30 Recipe Title Word Counts\") +\n  xlab('Ingredient')+\n  ylab('Frequency')+\n  theme(axis.text.x=element_text(size=13,face=\"bold\", colour=\"black\"), \n        axis.text.y=element_text(size=13,colour=\"black\",\n                                 face=\"bold\"), axis.title.x=element_text(size=14, face=\"bold\"),\n        axis.title.y=element_text(size=14,face=\"bold\"),\n        plot.title=element_text(size=24,face=\"bold\"))\n\n\n#identify titles that contain the major food groups, does any term correspond to a higher \n#social score\ntitles <- strsplit(clean_titles, split = ' ')\nchicken <- sapply(titles, function(x) 'chicken' %in% x)\nchocolate <- sapply(titles, function(x) 'chocolate' %in% x)\nsweet <- sapply(titles, function(x) 'sweet' %in% x)\nbacon <- sapply(titles, function(x) 'bacon' %in% x)\ncheese <- sapply(titles, function(x) 'cheese' %in% x)\nall_recipes$chicken <- chicken\nall_recipes$chocolate <- chocolate\nall_recipes$sweet <- sweet\nall_recipes$bacon <- bacon\nall_recipes$cheese <- cheese\n#It doesn't look like there is a very significant association between food names\n# and \n\nmean(all_recipes$social_rank[all_recipes$chicken == 1])\nmean(all_recipes$social_rank[all_recipes$chicken == 0])\nmean(all_recipes$social_rank[all_recipes$chocolate == 1])\nmean(all_recipes$social_rank[all_recipes$chocolate == 0])\nmean(all_recipes$social_rank[all_recipes$sweet == 1])\nmean(all_recipes$social_rank[all_recipes$sweet == 0])\nmean(all_recipes$social_rank[all_recipes$bacon == 1])\nmean(all_recipes$social_rank[all_recipes$bacon == 0])\nmean(all_recipes$social_rank[all_recipes$cheese == 1])\nmean(all_recipes$social_rank[all_recipes$cheese == 0])\n\n\n\n\n\n\n\n\n",
+    "created" : 1476885637065.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2811509972",
+    "id" : "D4E8620A",
+    "lastKnownWriteTime" : 1477012108,
+    "last_content_update" : 1477012108740,
+    "path" : "~/MSA/fall/text_mining/text_mining_proj/R code/title_analysis.R",
+    "project_path" : "title_analysis.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 6,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

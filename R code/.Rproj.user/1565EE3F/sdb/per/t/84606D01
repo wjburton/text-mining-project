@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "#needed funcitons\n\n#Reads in the data needed for analysis\nread_in_recipe_data <- function(){\ningredients <- read.csv('../data/all_ingredients.csv', stringsAsFactors = F)\nrecipes <- read.csv('../data/all_recipes.csv', stringsAsFactors = F)\nrecipes <- recipes[!duplicated(recipes$recipe_id),]\ndf <- merge(recipes, ingredients, by = 'recipe_id')\n}\n\n\n# clean only keep terms in the term list\nclean_ingredients <- function(ingredients, pred_score = F){\n  clean_ingreds <- clean_text(ingredients)\n  #read in the food list and stem the words\n  food_list <- read.csv('../data/food_list.csv')$unique.x.\n  food_list <- Corpus(VectorSource(food_list))\n  food_list <- tm_map(food_list, stemDocument)\n  food_list <- textreg::convert.tm.to.character(food_list)\n  \n  #only keep words that appear in the food list\n  clean_ingreds <- as.character(clean_ingreds)\n  recipe_corpus <- Corpus(VectorSource(clean_ingreds))\n  recipe_corpus <- tm_map(recipe_corpus, stemDocument)\n  clean_ingreds <- textreg::convert.tm.to.character(recipe_corpus)\n  splt_clean_ingreds <- strsplit(clean_ingreds, split = ' ')\n  clean_ingreds <- sapply(splt_clean_ingreds, function(x){\n    x <- x[x %in% food_list]\n    x <- paste(x, collapse = ' ')\n    return(x)\n  })\n  \n  if(pred_score == T){\n  clean_ingreds <- clean_ingreds[clean_ingreds != \"\"]\n  }\n  \n  return(clean_ingreds)\n}\n\n\n# cleans the text within an ingredient\nclean_text <- function(ingredients, pred_score = F){\n  temp <- gsub('\\\\d',\"\",ingredients) #remove numbers\n  temp <- gsub('[[:punct:]]', \" \", temp) # remove special characters\n  temp <- gsub(\" *\\\\b[[:alpha:]]{1}\\\\b *\", \" \", temp) #remove single letters\n  temp <- gsub('\\\\s+', \" \", temp) #remove extra white space\n  temp <- tolower(temp) #to lowercase\n  return(temp)\n}\n\n#Create a corpus of recipes removing stopwords and stemming applied\ncreate_corpus <-function(clean_ingredients){\n  recipe_corpus <- Corpus(VectorSource(clean_ingredients))\n  recipe_corpus <- tm_map(recipe_corpus, removeWords, stopwords('english'))\n  recipe_corpus <- tm_map(recipe_corpus, stemDocument)\n  return(recipe_corpus)\n}\n\n\n\n# This was used to generate the food list we are filtering the data on\n\n#Clean ingredients\n#remove numbers, single letters, special characters,\n# clean_food_list <- function(food_list){\n#   food_list <- food_list[,-1]\n#   food_col <- unlist(lapply(food_list, function(x){\n#     x <- x[x != \"\"]\n#     x <- unlist(strsplit(x, split = \" \"))\n#   }))\n#   food_col <- unique(food_col)\n# }\n# \n\n# food_list1 <- read.csv('food_list1.csv',stringsAsFactors = F, header = F)\n# food_list2 <-  read.csv('food_list2.csv',stringsAsFactors = F, header = F)\n# food_list3 <-  read.csv('food_list3.csv',stringsAsFactors = F, header = F)\n# \n# food_list1 <- clean_food_list(food_list1)\n# food_list2 <- clean_food_list(food_list2)\n# food_list3 <- clean_food_list(food_list3)\n# food_list <- unique(c(food_list3, food_list2, food_list1))\n# food_list <- data.frame(food_list)\n# write.csv(food_list, 'food_list.csv', row.names = F)\n\n\n\n",
+    "created" : 1476843832558.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "240520758",
+    "id" : "84606D01",
+    "lastKnownWriteTime" : 1477010075,
+    "last_content_update" : 1477010075659,
+    "path" : "~/MSA/fall/text_mining/text_mining_proj/R code/utils.R",
+    "project_path" : "utils.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 5,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
